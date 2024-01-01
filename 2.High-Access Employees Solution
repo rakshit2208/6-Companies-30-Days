@@ -1,0 +1,32 @@
+class Solution {
+public:
+    vector<string> findHighAccessEmployees(vector<vector<string>>& access_times) {
+         vector<string> ans;
+        unordered_map<string, vector<string>> mp;
+        for(auto it : access_times)
+            mp[it[0]].push_back(it[1]);
+        for(auto it : mp){
+            auto vec = it.second;
+            sort(vec.begin(), vec.end());
+            int cnt = 1, n = vec.size(), prev_ind = 0;
+            for(int i = 1 ; i < n ; i++){
+                int curr = stoi(vec[i]);
+                if(curr - stoi(vec[prev_ind]) < 100){
+                    cnt++;
+                    if(cnt == 3){
+                        ans.push_back(it.first);
+                        break;
+                    }
+                }
+                else{
+                    cnt++;
+                    while(prev_ind < i && curr - stoi(vec[prev_ind]) >= 100){
+                        cnt--;
+                        prev_ind++;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};
