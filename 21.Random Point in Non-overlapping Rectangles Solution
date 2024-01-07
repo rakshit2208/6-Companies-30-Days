@@ -1,0 +1,54 @@
+#include <vector>
+#include <random>
+
+using namespace std;
+
+class Solution 
+{
+public:
+    Solution(vector<vector<int>>& rects) : rects(rects), totalArea(0)
+    {
+        probabilities.reserve(rects.size());
+
+        for (const auto& rect : rects) 
+        {
+            int area = (rect[2] - rect[0] + 1) * (rect[3] - rect[1] + 1);
+            totalArea += area;
+            probabilities.push_back(area);
+        }
+
+        
+        for (auto& prob : probabilities) 
+        {
+            prob /= totalArea;
+        }
+
+        distribution = discrete_distribution<int>(probabilities.begin(), probabilities.end());
+
+        generator = mt19937(rd());
+    }
+    
+    vector<int> pick()
+    {
+        int index = distribution(generator);
+        const auto& rect = rects[index];
+
+        uniform_int_distribution<int> X(rect[0], rect[2]);
+        uniform_int_distribution<int> Y(rect[1], rect[3]);
+
+        return {X(generator), Y(generator)};
+    }
+
+private:
+    vector<vector<int>> rects;
+
+    vector<double> probabilities;
+
+    int totalArea;
+
+    random_device rd;
+
+    mt19937 generator;
+    
+    discrete_distribution<int> distribution;
+};
