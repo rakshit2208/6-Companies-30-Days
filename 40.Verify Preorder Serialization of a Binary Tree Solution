@@ -1,0 +1,22 @@
+class Solution {
+public:
+    vector<string> charary;
+    bool isValidSerialization(string preorder) {
+       split(preorder);
+       int diff=1;
+       for(string pre: charary){
+           if(--diff<0) return false;
+           if(pre!="#") diff+=2;
+       }
+        return diff==0;
+    }
+    
+    void split(string s) {
+        stringstream ss(s);
+        string tok;
+        while (getline(ss, tok,',')) {
+            charary.push_back(tok);
+        }
+    }
+    
+};
