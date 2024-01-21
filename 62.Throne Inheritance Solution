@@ -1,0 +1,47 @@
+class ThroneInheritance {
+public:map<string,map<string,int>> p;
+     int c=0;
+     string king;
+     map<string,int> d,x;
+    ThroneInheritance(string k) {
+        map<string,int> l;
+        p[k]=l;
+        x[k]=c++;
+        king=k;
+    }
+    
+    void birth(string pr, string ch) {
+        map<string,int> q=p[pr];
+        q[ch]++;
+        p[pr]=q;
+        x[ch]=c++;
+    }
+    
+    void death(string n) {
+        d[n]++;
+    }
+    void t(string pr,vector<string> &a)
+    {
+        a.push_back(pr);
+        vector<pair<int,string>> o;
+        for(auto j : p[pr])
+         {
+             o.push_back({x[j.first],j.first});
+         }
+         sort(o.begin(),o.end());
+        for(auto i : o) 
+        t(i.second,a);
+    }
+    vector<string> getInheritanceOrder() {
+        vector<string> a;
+        t(king,a);
+         
+        vector<string> ans;
+        for(auto i : a)
+        if(d[i]==0)
+        ans.push_back(i);
+
+        return ans;
+    }
+};
+
