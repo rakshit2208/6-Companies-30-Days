@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<vector<int>> g;
+    vector<int> ans;
+    int count_set_bits(int mask)
+    {
+        int count = 0;
+        while(mask > 0) {count+= ((mask % 2) == 1);mask/=2;}
+        return count;
+    }
+    int check_tree(int mask, int root, int par)
+    {
+        int ans = 1;
+        for(auto &x:g[root])
+        {
+            if(x == par ||( (mask & (1<<x)) == 0)) continue;
+            ans += check_tree(mask, x, root);
+        }
+        return ans;
+    }
+    int dfs(int mask ,int root, int par, vector<int> &lev)
+    {
+        int child = root;
+        for(auto &x:g[root])
+        {
+            if(x == par || ((mask & (1<<x)) == 0)) continue;
+            int temp_child = dfs(mask, x, root, lev);
+            if(lev[root] < lev[x] + 1) 
+            {
+                lev[root] = lev[x] + 1; 
+                child = temp_child;
+            }
+        }
+        return child;
+    }
+    int diameter(int mask, int root, int n)
+    {
+        vector<int> lev(n,0);
+        int deepest_node = dfs(mask, root, -1, lev);
+        lev.assign(n,0);
+        dfs(mask, deepest_node, -1, lev);
+        return lev[deepest_node];
+    }
+    vector<int> countSubgraphsForEachDiameter(int n, vector<vector<int>>& edges) {
+        g.resize(n);
+        ans.resize(n-1);
+        for(auto &x:edges) 
+        {
+            g[x[0] - 1].push_back(x[1] - 1);
+            g[x[1] - 1].push_back(x[0] - 1);
+        }
+        for(int i = 1;i<(1<<n);i++)
+        {
+            if((i&(i-1)) == 0 || check_tree(i, log2(i&(-i)), -1) != count_set_bits(i)) continue;
+            int dia = diameter(i, log2(i&(-i)), n);
+            ans[dia - 1]++;
+        }
+        return ans;
+    }
+};
